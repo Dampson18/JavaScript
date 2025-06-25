@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pyramid Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #282c34; /* Dark charcoal */
+            --code-bg: #3c414a; /* Slightly lighter charcoal for code areas */
+            --accent-green: #61dafb; /* Cyan/blue for accents */
+            --text-light: #f8f8f2; /* Off-white for text */
+            --border-color: #555c66; /* Medium gray for borders */
+            --button-bg: #4a90e2; /* Blue for buttons */
+            --button-hover: #3a7bd2; /* Darker blue for button hover */
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Fira Code', monospace; /* Monospace font for code-like feel */
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            line-height: 1.5;
+        }
+
+        .container {
+            background-color: var(--code-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative; /* For potential future absolute positioning */
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive; /* Pixelated font for title */
+            color: var(--accent-green);
+            margin-bottom: 25px;
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            text-shadow: 0 0 8px rgba(97, 218, 251, 0.5); /* Glow effect */
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align labels to the left */
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: var(--text-light);
+            font-size: 1em;
+            width: 100%; /* Ensure label takes full width */
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 24px); /* Account for padding and border */
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #2f333a; /* Darker input background */
+            color: var(--accent-green);
+            font-family: 'Fira Code', monospace;
+            font-size: 1em;
+            margin-bottom: 15px; /* Space between inputs */
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
+            outline: none;
+        }
+
+        input[type="number"] {
+            max-width: 120px; /* Limit width for number input */
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start; /* Align checkbox to left */
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-green); /* Color the checkbox itself */
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(74, 144, 226, 0.2);
+        }
+
+        #pyramidOutput {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+            white-space: pre; /* Preserves spaces and newlines */
+            font-family: 'Fira Code', monospace;
+            font-size: clamp(0.8rem, 1.8vw, 1.1rem); /* Responsive font size for output */
+            line-height: 1; /* Tight line height for compact pyramid */
+            color: var(--accent-green); /* Pyramid character color */
+            overflow-x: auto; /* Allow horizontal scrolling if pyramid is too wide */
+            min-height: 100px;
+            display: flex;
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            label {
+                font-size: 0.9em;
+            }
+            input[type="text"],
+            input[type="number"] {
+                padding: 8px 10px;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+            }
+            #pyramidOutput {
+                font-size: clamp(0.7rem, 3vw, 0.9rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pyramid Builder</h1>
+
+        <div class="input-group">
+            <label for="charInput">Character:</label>
+            <input type="text" id="charInput" maxlength="1" value="!">
+        </div>
+
+        <div class="input-group">
+            <label for="countInput">Height (Rows):</label>
+            <input type="number" id="countInput" min="1" max="50" value="10">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="invertedToggle">
+            <label for="invertedToggle">Inverted Pyramid</label>
+        </div>
+
+        <button id="generateBtn">Generate Pyramid</button>
+
+        <pre id="pyramidOutput">
+            Adjust settings and click 'Generate Pyramid'!
+        </pre>
+    </div>
+
+    <script>
+        function padRow(rowNumber, rowCount, character) {
+            return " ".repeat(rowCount - rowNumber) + character.repeat(2 * rowNumber - 1) + " ".repeat(rowCount - rowNumber);
+        }
+
+        function generatePyramid(character, count, inverted) {
+            const rows = [];
+            for (let i = 1; i <= count; i++) {
+                if (inverted) {
+                    rows.unshift(padRow(i, count, character));
+                } else {
+                    rows.push(padRow(i, count, character));
+                }
+            }
+            return rows.join("\n");
+        }
+
+        // --- DOM Elements and Event Listeners ---
+        const charInput = document.getElementById('charInput');
+        const countInput = document.getElementById('countInput');
+        const invertedToggle = document.getElementById('invertedToggle');
+        const generateBtn = document.getElementById('generateBtn');
+        const pyramidOutput = document.getElementById('pyramidOutput');
+
+        function updatePyramid() {
+            const character = charInput.value || "!"; // Default to '!' if empty
+            const count = parseInt(countInput.value);
+            const inverted = invertedToggle.checked;
+
+            // Basic validation
+            if (character.length > 1) {
+                charInput.value = character.charAt(0); // Restrict to single character
+                alert("Please enter only one character!");
+                return;
+            }
+            if (isNaN(count) || count < 1 || count > 50) {
+                countInput.value = 10; // Reset to default if invalid
+                alert("Please enter a height between 1 and 50!");
+                return;
+            }
+
+            pyramidOutput.textContent = generatePyramid(character, count, inverted);
+        }
+
+        // Attach event listeners
+        generateBtn.addEventListener('click', updatePyramid);
+
+        // Update pyramid when inputs change for a more interactive experience
+        charInput.addEventListener('input', updatePyramid);
+        countInput.addEventListener('input', updatePyramid);
+        invertedToggle.addEventListener('change', updatePyramid);
+
+
+        // Initial generation on page load
+        updatePyramid();
+    </script>
+</body>
+</html>

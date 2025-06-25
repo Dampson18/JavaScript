@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #1a1a2e; /* Dark blue-purple */
+            --secondary-bg: #2a2a4a; /* Slightly lighter blue-purple */
+            --card-bg: #33334d; /* Muted purple-grey */
+            --text-color: #e0e0e0; /* Off-white */
+            --accent-green: #4CAF50; /* Green for pass */
+            --accent-red: #d9534f; /* Red for fail */
+            --accent-yellow: #f0ad4e; /* Yellow for input/buttons */
+            --border-color: #663300; /* Wooden brown */
+            --font-rpg: 'Press Start 2P', cursive;
+            --font-main: 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 5px solid var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: var(--font-rpg);
+            color: var(--accent-yellow);
+            margin-bottom: 25px;
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        textarea, input[type="number"] {
+            width: calc(100% - 20px); /* Account for padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            font-size: 1em;
+            resize: vertical; /* Allow vertical resizing of textarea */
+            min-height: 60px;
+            box-sizing: border-box;
+        }
+
+        input[type="number"] {
+            max-width: 150px;
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: var(--accent-yellow);
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #e09f3e; /* Slightly darker yellow */
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            line-height: 1.6;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .passed {
+            background-color: rgba(76, 175, 80, 0.2); /* Green with transparency */
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .failed {
+            background-color: rgba(217, 83, 79, 0.2); /* Red with transparency */
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .grade-highlight {
+            font-family: var(--font-rpg);
+            font-size: 1.5em;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            textarea, input[type="number"] {
+                width: 100%;
+                margin-right: 0;
+            }
+            button {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grade Analyzer 9000</h1>
+
+        <div class="input-group">
+            <label for="totalScores">Enter all class scores (comma-separated):</label>
+            <textarea id="totalScores" placeholder="e.g., 92, 88, 12, 77, 57, 100, 67, 38, 97, 89"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="studentScore">Enter your score:</label>
+            <input type="number" id="studentScore" min="0" max="100" value="75">
+        </div>
+
+        <button id="calculateBtn">Calculate Grade</button>
+
+        <div id="result">
+            Enter scores and click 'Calculate Grade' to see results!
+        </div>
+    </div>
+
+    <script>
+        function getAverage(scores) {
+            let sum = 0;
+            for (let i = 0; i < scores.length; i++) {
+                sum += scores[i];
+            }
+            // Ensure sum / scores.length returns a number even if scores is empty
+            return scores.length === 0 ? 0 : Math.round(sum / scores.length); // Round to nearest whole number
+        }
+
+        function getGrade(score) {
+            if (score === 100) {
+                return "A++";
+            } else if (score >= 90) {
+                return "A";
+            } else if (score >= 80) {
+                return "B";
+            } else if (score >= 70) {
+                return "C";
+            } else if (score >= 60) {
+                return "D";
+            } else {
+                return "F";
+            }
+        }
+
+        function hasPassingGrade(score) {
+            return getGrade(score) !== "F";
+        }
+
+        function studentMsg(totalScores, studentScore) {
+            let average = getAverage(totalScores);
+            let grade = getGrade(studentScore);
+
+            let message = `Class average: ${average}. Your grade: <span class="grade-highlight">${grade}</span>.`;
+
+            if (hasPassingGrade(studentScore)) {
+                return {
+                    message: `${message} You passed the course.`,
+                    passed: true
+                };
+            } else {
+                return {
+                    message: `${message} You failed the course.`,
+                    passed: false
+                };
+            }
+        }
+
+        // --- DOM Elements and Event Listener ---
+        const totalScoresInput = document.getElementById('totalScores');
+        const studentScoreInput = document.getElementById('studentScore');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultDiv = document.getElementById('result');
+
+        calculateBtn.addEventListener('click', () => {
+            const scoresText = totalScoresInput.value;
+            const studentScore = parseInt(studentScoreInput.value);
+
+            // Basic validation
+            if (!scoresText.trim()) {
+                resultDiv.className = 'result failed';
+                resultDiv.innerHTML = "Please enter class scores.";
+                return;
+            }
+            if (isNaN(studentScore) || studentScore < 0 || studentScore > 100) {
+                resultDiv.className = 'result failed';
+                resultDiv.innerHTML = "Please enter a valid score for yourself (0-100).";
+                return;
+            }
+
+            // Parse total scores
+            const totalScoresArray = scoresText.split(',')
+                                            .map(s => parseInt(s.trim()))
+                                            .filter(n => !isNaN(n) && n >= 0 && n <= 100);
+
+            // Add student's score to the total scores for class average calculation
+            // If you want to exclude student's score from class average, remove this line
+            let classScoresForAverage = [...totalScoresArray];
+            if (!classScoresForAverage.includes(studentScore)) { // Avoid adding duplicate if already in list
+                 classScoresForAverage.push(studentScore);
+            }
+
+
+            const result = studentMsg(classScoresForAverage, studentScore); // Use classScoresForAverage for the average calculation
+
+            resultDiv.innerHTML = result.message;
+            resultDiv.className = result.passed ? 'result passed' : 'result failed';
+        });
+
+        // Set initial example values
+        totalScoresInput.value = "92, 88, 12, 77, 57, 100, 67, 38, 97, 89";
+        studentScoreInput.value = "37";
+        calculateBtn.click(); // Trigger initial calculation
+    </script>
+</body>
+</html>
